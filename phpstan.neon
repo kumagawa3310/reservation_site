@@ -1,0 +1,12 @@
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+
+    paths:
+        - app/
+
+    # 推奨レベル「6」に設定
+    level: 6
+
+    checkMissingIterableValueType: false
