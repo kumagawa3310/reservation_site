@@ -1,6 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Admin\SlotGenerationRuleController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ReservationSlotController;
 
 /*
 |--------------------------------------------------------------------------
@@ -8,11 +14,49 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
 |
 */
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/top', function () {
+    return view('top');
+})->middleware(['auth', 'verified'])->name('top');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/access', fn() => view('access'))->name('access');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // お問い合わせ
+    Route::get('/contact', [ContactController::class, 'create'])->name('contact.create'); // 入力画面
+    Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');  // 送信処理 
+});
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('users', AdminUserController::class);
+    
+    // お問い合わせ管理
+    Route::get('contacts', [AdminContactController::class, 'index'])->name('contacts.index');
+    Route::get('contacts/{contact}', [AdminContactController::class, 'show'])->name('contacts.show');
+    Route::patch('contacts/{contact}/status', [AdminContactController::class, 'updateStatus'])->name('contacts.updateStatus');
+
+    // 自動生成ルール管理
+    Route::post('slot-rules/generate', [SlotGenerationRuleController::class, 'generate'])->name('slot-rules.generate');
+    Route::resource('slot-rules', SlotGenerationRuleController::class)->except(['show', 'create', 'edit']);
+
+    // 予約枠管理
+    Route::prefix('reservation-slots')->name('slots.')->group(function () {
+        Route::get('/', [ReservationSlotController::class, 'index'])->name('index');
+        Route::post('/bulk', [ReservationSlotController::class, 'bulkStore'])->name('bulkStore');
+        Route::delete('/{slot}', [ReservationSlotController::class, 'destroy'])->name('destroy');
+    });
+});
+
+require __DIR__.'/auth.php';

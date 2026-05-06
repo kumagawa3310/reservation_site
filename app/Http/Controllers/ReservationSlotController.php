@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Room;
+use App\Models\ReservationSlot;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
+class ReservationSlotController extends Controller
+{
+    /**
+     * 予約枠一覧の表示
+     * 管理画面で現在の在庫状況を確認する
+     */
+    public function index()
+    {
+        // フォームの選択肢用に稼働中の部屋を取得
+        $rooms = Room::where('is_active', true)->get();
+
+        // 予約枠を日付順に取得（リレーションで部屋名も取得）
+        $slots = ReservationSlot::with('room')
+                    ->orderBy('date', 'asc')
+                    ->paginate(50);
+
+        return view('admin.slots.index', compact('rooms', 'slots'));
+    }
+
+    /**
+     * 予約枠の一括作成
+     * 指定期間 × 部屋数分のレコードを生成する
+     */
+    public function bulkStore(Request $request)
+    {
+        $request->validate([
+            'room_id'    => 'required|exists:rooms,id',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date'   => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $room = Room::findOrFail($request->room_id);
+        $start = Carbon::parse($request->start_date);
+        $end = Carbon::parse($request->end_date);
+
+        // 大量データを扱うためトランザクションを張る
+        DB::transaction(function () use ($start, $end, $room) {
+            for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+                
+                // 部屋マスタで設定した「部屋数」分だけ枠を作る
+                // ※Roomモデルに number_of_rooms カラムがある前提
+                for ($i = 0; $i < $room->number_of_rooms; $i++) {
+                    ReservationSlot::create([
+                        'room_id' => $room->id,
+                        'date'    => $date->toDateString(),
+                        'price'   => $room->price, // その時点のマスタ料金をコピー
+                        'status'  => 'available',
+                    ]);
+                }
+            }
+        });
+
+        return redirect()->back()->with('success', '予約枠を一括作成しました。');
+    }
+
+    /**
+     * 予約枠の削除
+     * サイト外予約（電話等）が入った際に在庫を減らすための処理
+     */
+    public function destroy(ReservationSlot $slot)
+    {
+        // 既に予約済みの枠を誤って消さないためのチェック
+        if ($slot->status === 'reserved') {
+            return redirect()->back()->with('error', '予約済みの枠は削除できません。');
+        }
+
+        $slot->delete();
+
+        return redirect()->back()->with('success', '予約枠を削除しました（在庫を1減らしました）。');
+    }
+}
