@@ -64,6 +64,34 @@ class ReservationSlotController extends Controller
     }
 
     /**
+     * 予約枠の編集
+     * 日付・部屋・料金・ステータスを編集可能
+     */
+    public function edit(ReservationSlot $slot)
+    {
+        $rooms = Room::where('is_active', true)->get();
+        return view('admin.slots.edit', compact('slot', 'rooms'));
+    }
+
+    /**
+     * 予約枠の更新
+     * 日付・部屋・料金・ステータスを更新
+     */
+    public function update(Request $request, ReservationSlot $slot)
+    {
+        $validated = $request->validate([
+            'date'    => 'required|date',
+            'room_id' => 'required|exists:rooms,id',
+            'price'   => 'required|integer|min:0',
+            'status'  => 'required|in:available,reserved',
+        ]);
+
+        $slot->update($validated);
+
+        return redirect()->route('admin.slots.index')->with('success', '予約枠を更新しました。');
+    }
+
+    /**
      * 予約枠の削除
      * サイト外予約（電話等）が入った際に在庫を減らすための処理
      */

@@ -47,16 +47,18 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('contacts/{contact}', [AdminContactController::class, 'show'])->name('contacts.show');
     Route::patch('contacts/{contact}/status', [AdminContactController::class, 'updateStatus'])->name('contacts.updateStatus');
 
-    // 自動生成ルール管理
-    Route::post('slot-rules/generate', [SlotGenerationRuleController::class, 'generate'])->name('slot-rules.generate');
-    Route::resource('slot-rules', SlotGenerationRuleController::class)->except(['show', 'create', 'edit']);
-
     // 予約枠管理
     Route::prefix('reservation-slots')->name('slots.')->group(function () {
         Route::get('/', [ReservationSlotController::class, 'index'])->name('index');
         Route::post('/bulk', [ReservationSlotController::class, 'bulkStore'])->name('bulkStore');
+        Route::get('/{slot}/edit', [ReservationSlotController::class, 'edit'])->name('edit');
+        Route::patch('/{slot}', [ReservationSlotController::class, 'update'])->name('update');
         Route::delete('/{slot}', [ReservationSlotController::class, 'destroy'])->name('destroy');
     });
+    
+    // 自動生成ルール管理
+    Route::post('slot-rules/generate', [SlotGenerationRuleController::class, 'generate'])->name('slot-rules.generate');
+    Route::resource('slot-rules', SlotGenerationRuleController::class)->except(['show', 'create', 'edit']);
 });
 
 require __DIR__.'/auth.php';

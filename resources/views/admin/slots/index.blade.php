@@ -84,18 +84,25 @@
                                         <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">予約済</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    @if($reservationSlot->status === 'available')
-                                        <form action="{{ route('admin.slots.destroy', $reservationSlot) }}" method="POST"
-                                              onsubmit="return confirm('この予約枠を削除しますか？');" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900 font-medium">削除</button>
-                                        </form>
-                                    @else
-                                        <span class="text-gray-400 cursor-not-allowed">削除不可</span>
-                                    @endif
-                                </td>
+<td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+    @if($reservationSlot->status === 'available')
+        <!-- 編集ボタン -->
+        <a href="{{ route('admin.slots.edit', $reservationSlot) }}" 
+           class="text-indigo-600 hover:text-indigo-900 font-medium">
+            編集
+        </a>
+
+        <!-- 既存の削除ボタン -->
+        <form action="{{ route('admin.slots.destroy', $reservationSlot) }}" method="POST"
+              onsubmit="return confirm('この予約枠を削除しますか？');" class="inline">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="text-red-600 hover:text-red-900 font-medium">削除</button>
+        </form>
+    @else
+        <span class="text-gray-400 cursor-not-allowed">編集・削除不可</span>
+    @endif
+</td>
                             </tr>
                         @empty
                             <tr>

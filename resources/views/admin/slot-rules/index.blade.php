@@ -121,16 +121,6 @@
                     </tbody>
                 </table>
             </div>
-
-            {{-- スケジューラー案内 --}}
-            <div class="bg-blue-50 border border-blue-200 rounded-lg px-6 py-4 text-sm text-blue-800">
-                <p class="font-medium mb-1">自動実行の設定（サーバー管理者向け）</p>
-                <p>以下の cron を登録すると毎日深夜 0 時に自動生成されます：</p>
-                <code class="block mt-2 bg-blue-100 rounded px-3 py-2 text-xs font-mono">
-                    * * * * * cd {{ base_path() }} && php artisan schedule:run >> /dev/null 2>&1
-                </code>
-            </div>
-
         </div>
     </div>
 </x-app-layout>
