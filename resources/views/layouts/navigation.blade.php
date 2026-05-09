@@ -19,6 +19,9 @@
                         {{ __('access') }}
                     </x-nav-link>
                     @if (Auth::user()->isGuest())
+                    <x-nav-link :href="route('plans.index')" :active="request()->routeIs('plans.index')">
+                        宿泊プラン
+                    </x-nav-link>
                     <x-nav-link :href="route('contact.create')" :active="request()->routeIs('contact.create')">
                         {{ __('contact') }}
                     </x-nav-link>
@@ -29,6 +32,9 @@
                         </x-nav-link>
                         <x-nav-link :href="route('admin.contacts.index')" :active="request()->routeIs('admin.contacts.*')">
                             お問い合わせ管理
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.*')">
+                            宿泊プラン管理
                         </x-nav-link>
                         <x-nav-link :href="route('admin.slots.index')" :active="request()->routeIs('admin.slots.*')">
                             予約枠管理
