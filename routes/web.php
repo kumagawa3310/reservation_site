@@ -7,6 +7,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ReservationSlotController;
+use App\Http\Controllers\StayPlanController;
+use App\Http\Controllers\PlanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,11 +36,16 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // お問い合わせ
+    // 宿泊プラン（利用者用）
+    Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
+    Route::get('/plans/{plan}', [PlanController::class, 'show'])->name('plans.show');
+
+    // お問い合わせ（利用者用）
     Route::get('/contact', [ContactController::class, 'create'])->name('contact.create'); // 入力画面
     Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');  // 送信処理 
 });
 
+// 管理者用
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', AdminUserController::class);
     
@@ -46,6 +53,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('contacts', [AdminContactController::class, 'index'])->name('contacts.index');
     Route::get('contacts/{contact}', [AdminContactController::class, 'show'])->name('contacts.show');
     Route::patch('contacts/{contact}/status', [AdminContactController::class, 'updateStatus'])->name('contacts.updateStatus');
+
+    // 宿泊プラン管理
+    Route::prefix('plans')->name('plans.')->group(function () {
+        Route::get('/', [StayPlanController::class, 'index'])->name('index');
+        Route::get('/create', [StayPlanController::class, 'create'])->name('create');
+        Route::post('/', [StayPlanController::class, 'store'])->name('store');
+        Route::get('/{plan}/edit', [StayPlanController::class, 'edit'])->name('edit');
+        Route::patch('/{plan}', [StayPlanController::class, 'update'])->name('update');
+        Route::delete('/{plan}', [StayPlanController::class, 'destroy'])->name('destroy');
+        Route::patch('/{plan}/status', [StayPlanController::class, 'updateStatus'])->name('updateStatus');
+    });
 
     // 予約枠管理
     Route::prefix('reservation-slots')->name('slots.')->group(function () {
