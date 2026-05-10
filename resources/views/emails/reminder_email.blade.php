@@ -17,19 +17,13 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1 style="color: #444; font-size: 20px;">
-                {{ $type === 'admin' ? '新規予約通知' : 'ご予約確認書' }}
-            </h1>
+            <h1 style="color: #444; font-size: 20px;">宿泊予定のお知らせ</h1>
         </div>
 
         <div class="content">
-            @if($type === 'admin')
-                <p>管理者様、新しい予約が入りました。詳細は以下の通りです。</p>
-            @else
-                <p>{{ $reservation->guest_name }} 様</p>
-                <p>この度は当ホテルをご予約いただき、誠にありがとうございます。<br>
-                以下の内容でご予約を承りましたので、ご確認ください。</p>
-            @endif
+            <p>{{ $reservation->guest_name }} 様</p>
+            <p>この度は当ホテルをご利用いただき、誠にありがとうございます。<br>
+            ご宿泊日が近づいてまいりましたので、内容を改めてご案内いたします。</p>
 
             <table class="info-table">
                 <tr>
@@ -48,24 +42,14 @@
                     <th>チェックアウト</th>
                     <td>{{ $reservation->check_out_date->format('Y/m/d') }}</td>
                 </tr>
-                <tr>
-                    <th>宿泊者名</th>
-                    <td>{{ $reservation->guest_name }} 様</td>
-                </tr>
-                <tr>
-                    <th>合計金額</th>
-                    <td style="color: #6366f1; font-weight: bold;">¥{{ number_format($reservation->total_price) }}（税込）</td>
-                </tr>
             </table>
 
-            @if($type === 'customer')
-                <div style="margin-top: 30px; padding: 15px; background: #eef2ff; border-radius: 8px;">
-                    <p style="margin: 0; font-size: 14px; color: #4f46e5;">
-                        ※当日はフロントにてお名前をお申し付けください。<br>
-                        お会いできるのを楽しみにしております。
-                    </p>
-                </div>
-            @endif
+            <div style="margin-top: 30px; padding: 15px; background: #eef2ff; border-radius: 8px;">
+                <p style="margin: 0; font-size: 14px; color: #4f46e5;">
+                    ※当日はフロントにてお名前をお申し付けください。<br>
+                    お会いできるのを楽しみにしております。
+                </p>
+            </div>
         </div>
 
         <div class="footer">
