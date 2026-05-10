@@ -29,6 +29,7 @@ class Reservation extends Model
         'number_of_guests',
         'total_price',
         'status',
+        'admin_memo',
     ];
 
     // リレーションの定義

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
 use App\Http\Controllers\Admin\SlotGenerationRuleController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactController;
@@ -82,6 +83,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // 自動生成ルール管理
     Route::post('slot-rules/generate', [SlotGenerationRuleController::class, 'generate'])->name('slot-rules.generate');
     Route::resource('slot-rules', SlotGenerationRuleController::class)->except(['show', 'create', 'edit']);
+
+    // 予約管理
+    Route::prefix('reservations')->name('reservations.')->group(function () {
+        Route::get('/', [AdminReservationController::class, 'index'])->name('index');
+        Route::get('/{reservation}', [AdminReservationController::class, 'show'])->name('show');
+        Route::put('/{reservation}/memo', [AdminReservationController::class, 'updateMemo'])->name('memo');
+        Route::post('/{reservation}/cancel', [AdminReservationController::class, 'cancel'])->name('cancel');
+    });
 });
 
 require __DIR__.'/auth.php';
