@@ -29,14 +29,14 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">予約枠の一括作成</h3>
                 <form action="{{ route('admin.slots.bulkStore') }}" method="POST"
-                      class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      class="grid grid-cols-1 md:grid-cols-5 gap-4">
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">部屋タイプ</label>
                         <select name="room_id" required
                                 class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-indigo-500 focus:border-indigo-500">
                             @foreach($rooms as $room)
-                                <option value="{{ $room->id }}">{{ $room->name }} (最大{{ $room->number_of_rooms }}室)</option>
+                                <option value="{{ $room->id }}">{{ $room->name }} ({{ $room->number_of_rooms }}室)</option>
                             @endforeach
                         </select>
                     </div>
@@ -48,6 +48,11 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">終了日</label>
                         <input type="date" name="end_date" min="{{ date('Y-m-d') }}" required
+                               class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">料金（空白で部屋設定値）</label>
+                        <input type="number" name="price" min="0" placeholder="例: 12000"
                                class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     <div class="flex items-end">

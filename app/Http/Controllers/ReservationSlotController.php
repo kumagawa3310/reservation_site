@@ -37,23 +37,21 @@ class ReservationSlotController extends Controller
             'room_id'    => 'required|exists:rooms,id',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date'   => 'required|date|after_or_equal:start_date',
+            'price'      => 'nullable|integer|min:0',
         ]);
 
-        $room = Room::findOrFail($request->room_id);
+        $room  = Room::findOrFail($request->room_id);
+        $price = $request->filled('price') ? (int)$request->price : $room->price;
         $start = Carbon::parse($request->start_date);
-        $end = Carbon::parse($request->end_date);
+        $end   = Carbon::parse($request->end_date);
 
-        // 大量データを扱うためトランザクションを張る
-        DB::transaction(function () use ($start, $end, $room) {
+        DB::transaction(function () use ($start, $end, $room, $price) {
             for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
-                
-                // 部屋マスタで設定した「部屋数」分だけ枠を作る
-                // ※Roomモデルに number_of_rooms カラムがある前提
                 for ($i = 0; $i < $room->number_of_rooms; $i++) {
                     ReservationSlot::create([
                         'room_id' => $room->id,
                         'date'    => $date->toDateString(),
-                        'price'   => $room->price, // その時点のマスタ料金をコピー
+                        'price'   => $price,
                         'status'  => 'available',
                     ]);
                 }

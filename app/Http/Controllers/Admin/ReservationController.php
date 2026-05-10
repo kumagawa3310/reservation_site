@@ -93,15 +93,20 @@ class ReservationController extends Controller
                 $checkIn  = $reservation->check_in_date->copy();
                 $checkOut = $reservation->check_out_date->copy();
 
-                $dates = [];
+                // 各日付につき reserved なスロットを1つだけ available に戻す
                 while ($checkIn->lt($checkOut)) {
-                    $dates[] = $checkIn->toDateString();
+                    $slot = ReservationSlot::where('room_id', $reservation->room_id)
+                        ->where('date', $checkIn->toDateString())
+                        ->where('status', 'reserved')
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($slot) {
+                        $slot->update(['status' => 'available']);
+                    }
+
                     $checkIn->addDay();
                 }
-
-                ReservationSlot::where('room_id', $reservation->room_id)
-                    ->whereIn('date', $dates)
-                    ->update(['status' => 'available']);
             });
         } catch (\Exception $e) {
             return back()->with('error', 'キャンセル処理に失敗しました: ' . $e->getMessage());

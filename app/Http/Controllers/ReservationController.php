@@ -86,18 +86,21 @@ public function create(Request $request, StayPlan $plan)
                     'status'           => Reservation::STATUS_CONFIRMED,
                 ]);
 
-                // チェックイン〜チェックアウト前日の各予約枠を「予約済み」に更新
-                $dates = [];
+                // 各日付につき available なスロットを1つだけ reserved にする
                 $day = $checkIn->copy();
                 while ($day->lt($checkOut)) {
-                    $dates[] = $day->toDateString();
+                    $slot = ReservationSlot::where('room_id', $plan->room_id)
+                        ->where('date', $day->toDateString())
+                        ->where('status', 'available')
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($slot) {
+                        $slot->update(['status' => 'reserved']);
+                    }
+
                     $day->addDay();
                 }
-
-                ReservationSlot::where('room_id', $plan->room_id)
-                    ->whereIn('date', $dates)
-                    ->where('status', 'available')
-                    ->update(['status' => 'reserved']);
 
                 return $reservation;
             });

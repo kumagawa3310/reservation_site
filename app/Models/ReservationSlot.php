@@ -9,7 +9,7 @@ class ReservationSlot extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['room_id', 'date', 'status', 'price_override'];
+    protected $fillable = ['room_id', 'date', 'status', 'price', 'price_override'];
 
     public function room()
     {
