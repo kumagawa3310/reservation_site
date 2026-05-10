@@ -18,6 +18,7 @@
                     <x-nav-link :href="route('access')" :active="request()->routeIs('access')">
                         アクセス案内
                     </x-nav-link>
+                    <!-- 宿泊者用 -->
                     @if (Auth::user()->isGuest())
                     <x-nav-link :href="route('plans.index')" :active="request()->routeIs('plans.index')">
                         宿泊プラン
@@ -26,7 +27,8 @@
                         お問い合わせ
                     </x-nav-link>
                     @endif
-                    @if (Auth::user()->isAdmin())
+                    <!-- 管理者用 -->
+                    @if (Auth::user()->isAdmin()) 
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             管理者管理
                         </x-nav-link>
@@ -38,6 +40,9 @@
                         </x-nav-link>
                         <x-nav-link :href="route('admin.slots.index')" :active="request()->routeIs('admin.slots.*')">
                             予約枠管理
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.reservations.index')" :active="request()->routeIs('admin.reservations.*')">
+                            予約管理
                         </x-nav-link>
                     @endif
                 </div>
