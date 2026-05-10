@@ -13,17 +13,17 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('top')" :active="request()->routeIs('top')">
-                        {{ __('top') }}
+                        トップ
                     </x-nav-link>
                     <x-nav-link :href="route('access')" :active="request()->routeIs('access')">
-                        {{ __('access') }}
+                        アクセス案内
                     </x-nav-link>
                     @if (Auth::user()->isGuest())
                     <x-nav-link :href="route('plans.index')" :active="request()->routeIs('plans.index')">
                         宿泊プラン
                     </x-nav-link>
                     <x-nav-link :href="route('contact.create')" :active="request()->routeIs('contact.create')">
-                        {{ __('contact') }}
+                        お問い合わせ
                     </x-nav-link>
                     @endif
                     @if (Auth::user()->isAdmin())
