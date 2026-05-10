@@ -9,6 +9,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ReservationSlotController;
 use App\Http\Controllers\StayPlanController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\ReservationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
     Route::get('/plans/{plan}', [PlanController::class, 'show'])->name('plans.show');
 
+    // 予約
+    Route::get('/plans/{plan}/reserve', [ReservationController::class, 'create'])->name('reservations.create');
+    Route::post('/plans/{plan}/reserve', [ReservationController::class, 'store'])->name('reservations.store');
+    Route::get('/reservations/{reservation}/complete', [ReservationController::class, 'complete'])->name('reservations.complete');
+
     // お問い合わせ（利用者用）
     Route::get('/contact', [ContactController::class, 'create'])->name('contact.create'); // 入力画面
     Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');  // 送信処理 
@@ -62,7 +68,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/{plan}/edit', [StayPlanController::class, 'edit'])->name('edit');
         Route::patch('/{plan}', [StayPlanController::class, 'update'])->name('update');
         Route::delete('/{plan}', [StayPlanController::class, 'destroy'])->name('destroy');
-        Route::patch('/{plan}/status', [StayPlanController::class, 'updateStatus'])->name('updateStatus');
     });
 
     // 予約枠管理
