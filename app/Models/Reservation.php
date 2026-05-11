@@ -28,6 +28,9 @@ class Reservation extends Model
         'guest_phone',
         'number_of_guests',
         'total_price',
+        'payment_method',
+        'payment_status',
+        'stripe_payment_intent_id',
         'status',
         'admin_memo',
     ];
