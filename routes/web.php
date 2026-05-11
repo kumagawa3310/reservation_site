@@ -10,6 +10,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ReservationSlotController;
 use App\Http\Controllers\StayPlanController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReservationController;
 
 /*
@@ -46,6 +47,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/plans/{plan}/reserve', [ReservationController::class, 'create'])->name('reservations.create');
     Route::post('/plans/{plan}/reserve', [ReservationController::class, 'store'])->name('reservations.store');
     Route::get('/reservations/{reservation}/complete', [ReservationController::class, 'complete'])->name('reservations.complete');
+
+    // 決済インテント作成（JSから非同期で呼ぶ）
+    Route::post('/payment/intent', [PaymentController::class, 'createIntent'])->name('payment.intent');
 
     // お問い合わせ（利用者用）
     Route::get('/contact', [ContactController::class, 'create'])->name('contact.create'); // 入力画面
