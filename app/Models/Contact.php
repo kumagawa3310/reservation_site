@@ -16,7 +16,10 @@ class Contact extends Model
         'status'
     ];
 
-    public function getStatusLabelAttribute()
+    /**
+     * 修正ポイント：戻り値の型「: string」を指定
+     */
+    public function getStatusLabelAttribute(): string
     {
         return match($this->status) {
             0 => '未対応',
@@ -26,5 +29,3 @@ class Contact extends Model
         };
     }
 }
-
-

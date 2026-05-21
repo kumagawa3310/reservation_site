@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder; // 追記：Larastan用にクエリビルダをインポート
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,13 +27,23 @@ class StayPlan extends Model
         'available_to'   => 'date',
     ];
 
+    /**
+     * 修正ポイント：PHPDocでジェネリクス（関連モデルの型）を指定
+     *
+     * @return BelongsTo<Room, StayPlan>
+     */
     public function room(): BelongsTo
     {
         return $this->belongsTo(Room::class);
     }
 
-    /** 今日の日付で有効なプランのみ絞り込む */
-    public function scopeActive($query)
+    /**
+     * 今日の日付で有効なプランのみ絞り込む
+     * 
+     * @param Builder<StayPlan> $query
+     * @return Builder<StayPlan>
+     */
+    public function scopeActive(Builder $query): Builder
     {
         $today = now()->toDateString();
 

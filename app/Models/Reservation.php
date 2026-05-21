@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // 修正ポイント：BelongsToをインポート
 
 class Reservation extends Model
 {
-// ステータスの定数定義
+    use HasFactory; // 必要であれば（元のコードでコメントアウトされていなければ残します）
+
+    // ステータスの定数定義
     const STATUS_CONFIRMED = 1;  // 予約確定
     const STATUS_CHECKED_IN = 2; // チェックイン済み
     const STATUS_CANCELLED = 3;  // キャンセル
@@ -35,13 +38,39 @@ class Reservation extends Model
         'admin_memo',
     ];
 
-    // リレーションの定義
-    public function user() { return $this->belongsTo(User::class); }
-    public function stayPlan() { return $this->belongsTo(StayPlan::class); }
-    public function room() { return $this->belongsTo(Room::class); }
+    // --- リレーションの定義（修正ポイント） ---
 
-    // Bladeなどで文字として表示したい場合に便利なメソッド
-    public function getStatusLabelAttribute()
+    /**
+     * @return BelongsTo<User, Reservation>
+     */
+    public function user(): BelongsTo 
+    { 
+        return $this->belongsTo(User::class); 
+    }
+
+    /**
+     * @return BelongsTo<StayPlan, Reservation>
+     */
+    public function stayPlan(): BelongsTo 
+    { 
+        return $this->belongsTo(StayPlan::class); 
+    }
+
+    /**
+     * @return BelongsTo<Room, Reservation>
+     */
+    public function room(): BelongsTo 
+    { 
+        return $this->belongsTo(Room::class); 
+    }
+
+
+    /** 
+     * Bladeなどで文字として表示したい場合に便利なメソッド
+     * 
+     * 修正ポイント：戻り値の型「: string」を指定
+     */
+    public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
             self::STATUS_CONFIRMED => '予約確定',

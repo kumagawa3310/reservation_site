@@ -14,7 +14,7 @@ class SendReminderEmail extends Command
     protected $signature = 'app:send-reminders';
     protected $description = '宿泊3日前の予約者にリマインドメールを送信します';
 
-    public function handle()
+    public function handle() :int
     {
         // 3日後の日付を取得
         $targetDate = Carbon::today()->addDays(3);
@@ -32,6 +32,7 @@ class SendReminderEmail extends Command
                 $this->error("Failed to send: {$reservation->id}. Error: {$e->getMessage()}");
             }
         }
+        return Command::SUCCESS;
     }
 }
 

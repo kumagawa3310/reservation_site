@@ -3,37 +3,37 @@
 namespace App\Http\Controllers;
 
 use App\Models\StayPlan;
-use App\Models\Room; // 部屋選択用
+use App\Models\Room;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class StayPlanController extends Controller
 {
     /**
      * プラン一覧
      */
-    public function index()
+    public function index(): View
     {
-        // 部屋情報も一緒に取得してページネーション
-        $plans = StayPlan::with('room')->latest()->paginate(20);
-        
+        $plans = StayPlan::with('room')->oldest('id')->paginate(20);
+
         return view('admin.plans.index', compact('plans'));
     }
 
     /**
      * 新規作成画面
      */
-    public function create()
+    public function create(): View
     {
-        // プラン作成時に紐付ける部屋一覧を取得
         $rooms = Room::all();
-        
+
         return view('admin.plans.create', compact('rooms'));
     }
 
     /**
      * 保存処理
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'room_id'        => 'required|exists:rooms,id',
@@ -53,17 +53,17 @@ class StayPlanController extends Controller
     /**
      * 編集画面
      */
-    public function edit(StayPlan $plan)
+    public function edit(StayPlan $plan): View
     {
         $rooms = Room::all();
-        
+
         return view('admin.plans.edit', compact('plan', 'rooms'));
     }
 
     /**
      * 更新処理
      */
-    public function update(Request $request, StayPlan $plan)
+    public function update(Request $request, StayPlan $plan): RedirectResponse
     {
         $validated = $request->validate([
             'room_id'        => 'required|exists:rooms,id',
@@ -83,7 +83,7 @@ class StayPlanController extends Controller
     /**
      * 削除処理（論理削除）
      */
-    public function destroy(StayPlan $plan)
+    public function destroy(StayPlan $plan): RedirectResponse
     {
         $plan->delete();
 
